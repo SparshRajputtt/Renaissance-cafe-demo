@@ -5,6 +5,7 @@ import {
   useScroll,
   useTransform,
   useInView,
+  useMotionValueEvent,
   AnimatePresence,
 } from "framer-motion";
 import {
@@ -71,8 +72,12 @@ const images = {
   gallery3: "/gallery/gallery-2.png",
   gallery4: "/gallery/gallery-3.png",
   gallery5: "/gallery/chef-at-work.png",
-  gallery6:
-    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&q=85",
+  gallery6: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&q=85",
+  explore1: "/explore/explore-1.png",
+  explore2: "/explore/explore-2.png",
+  explore3: "/explore/explore-3.png",
+  explore4: "/explore/explore-4.png",
+  explore5: "/explore/explore-5.png",
 };
 
 /* ── Animation Variants ── */
@@ -401,7 +406,7 @@ function Hero() {
 /* ============================================================
    EXPERIENCE
    ============================================================ */
-function Experience() {
+function ExperienceDesktop() {
   const { ref, isInView } = useScrollAnimation();
 
   const experiences = [
@@ -504,6 +509,177 @@ function Experience() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function ExperienceMobile() {
+  const experiences = [
+    {
+      icon: <Coffee className="w-6 h-6" />,
+      title: "Artisan Coffee",
+      desc: "Single-origin beans, hand-pulled espresso, and Himalayan-inspired brews crafted with precision.",
+    },
+    {
+      icon: <Cake className="w-6 h-6" />,
+      title: "Handcrafted Patisserie",
+      desc: "European techniques meet local ingredients — croissants, tarts, and gateaux made fresh daily.",
+    },
+    {
+      icon: <Wine className="w-6 h-6" />,
+      title: "Curated Ambience",
+      desc: "Warm lighting, intimate seating, and a soundtrack that transports you to a Parisian salon.",
+    },
+    {
+      icon: <Leaf className="w-6 h-6" />,
+      title: "Farm-to-Table",
+      desc: "Sourced from local Uttarakhand farms and European imports for uncompromising quality.",
+    },
+  ];
+  const galleryImages = [
+    images.explore1,
+    images.explore2,
+    images.explore3,
+    images.explore4,
+    images.explore5,
+  ];
+  useEffect(() => {
+    galleryImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+  const [currentImage, setCurrentImage] = useState(0);
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    let index = 0;
+
+    if (latest < 0.2) index = 0;
+    else if (latest < 0.4) index = 1;
+    else if (latest < 0.6) index = 2;
+    else if (latest < 0.8) index = 3;
+    else index = 4;
+
+    setCurrentImage(index);
+  });
+  return (
+    <section id="experience" className="bg-[#FAF8F5] lg:hidden">
+      {/* Top Content */}
+      <div className="max-w-7xl mx-auto px-6 pt-24">
+        <span className="text-[#B85C4F] text-xs tracking-[0.3em] uppercase block mb-4">
+          The Experience
+        </span>
+
+        <h2
+          className="text-4xl font-light text-[#2C2824] mb-8 leading-tight"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+        >
+          A Sanctuary of <br />
+          <span className="italic">Taste & Tranquility</span>
+        </h2>
+
+        <p className="text-[#9A8E7E] leading-relaxed mb-12">
+          Step into a space where time slows down. Every corner of Renaissance
+          has been thoughtfully designed to evoke the warmth of a European salon
+          while honoring the serene spirit of Haridwar. From the aroma of
+          freshly ground coffee to the gentle clink of porcelain, every sense is
+          invited to partake in the experience.
+        </p>
+
+        <div className="grid gap-8 mb-20">
+          {experiences.map((exp, i) => (
+            <div key={i}>
+              <div className="w-12 h-12 rounded-full bg-[#F5F0E8] flex items-center justify-center text-[#B85C4F] mb-4">
+                {exp.icon}
+              </div>
+
+              <h3 className="text-[#2C2824] text-sm font-medium tracking-wide uppercase mb-2">
+                {exp.title}
+              </h3>
+
+              <p className="text-[#9A8E7E] text-sm leading-relaxed">
+                {exp.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Sticky Gallery */}
+      <section ref={sectionRef} className="relative h-[1000vh]">
+        <div className="sticky top-0 h-screen flex flex-col items-center pt-12 px-3">
+          <div className="relative w-full h-[72vh] overflow-hidden rounded-sm shadow-2xl">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={currentImage}
+                src={galleryImages[currentImage]}
+                className="absolute inset-0 w-full h-full object-cover"
+                initial={{
+                  opacity: 0,
+                  scale: 1,
+                }}
+                animate={{
+                  opacity: 1,
+                  scale: 1.05,
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 1.1,
+                }}
+                transition={{
+                  duration: 0.35,
+                  ease: "easeOut",
+                }}
+              />
+            </AnimatePresence>
+          </div>
+          <div className="mt-8 flex flex-col items-center px-6">
+            <motion.div
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="w-14 h-px bg-[#C9A96E] mb-5"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center"
+            >
+              <p className="text-[#2C2824] uppercase tracking-[0.35em] text-[11px]">
+                Explore the Experience
+              </p>
+
+              <p
+                className="text-[#9A8E7E] text-sm mt-2 italic"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                Every frame captures a moment worth savoring.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function Experience() {
+  return (
+    <>
+      <div className="hidden lg:block">
+        <ExperienceDesktop />
+      </div>
+
+      <ExperienceMobile />
+    </>
   );
 }
 
@@ -1180,15 +1356,14 @@ function PlanYourVisit() {
                     Location
                   </h3>
                   <p className="text-[#9A8E7E] text-sm leading-relaxed">
-                    42 Upper Road, Near Har Ki Pauri
+                    43-renaissance, Kankhal - Jwalapur Rd, opp. Bank of Baroda, Ram Nagar
                     <br />
-                    Haridwar, Uttarakhand 249401
+                    Haridwar, Jwalapur, Uttarakhand 249401
                     <br />
                     India
                   </p>
                 </div>
               </motion.div>
-
               <motion.div
                 variants={fadeUp}
                 className="bg-[#FAF8F5] p-8 flex items-start gap-5"
@@ -1222,7 +1397,7 @@ function PlanYourVisit() {
                     Contact
                   </h3>
                   <p className="text-[#9A8E7E] text-sm leading-relaxed">
-                    +91 98765 43210
+                    +91 6397692894
                     <br />
                     hello@renaissanceharidwar.com
                   </p>
@@ -1251,7 +1426,7 @@ function PlanYourVisit() {
               className="h-[500px] bg-[#E8E0D4] overflow-hidden relative"
             >
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3457.0!2d78.1642!3d29.9457!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjnCsDU2JzQ0LjUiTiA3OMKwMDknNTEuMSJF!5e0!3m2!1sen!2sin!4v1600000000000!5m2!1sen!2sin"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1077.2357659905008!2d78.1252642399118!3d29.92584879083364!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3909476c2d711995%3A0x25aceeb7c84ac2c8!2sRenaissance%20by%20chef%20Nishtha%20Bajaj!5e1!3m2!1sen!2sin!4v1782135380258!5m2!1sen!2sin"
                 width="100%"
                 height="100%"
                 style={{ border: 0, filter: "grayscale(100%) contrast(1.1)" }}
